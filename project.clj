@@ -43,6 +43,9 @@
   :figwheel {:server-port 5309}
   :profiles {:uberjar {:aot :all
                        :prep-tasks ["compile" ["cljsbuild" "once" "min"]]}
-             :dev {:plugins [[lein-figwheel "0.5.3"]]}}
+             :dev {:plugins [[lein-figwheel "0.5.3"]
+                             [lein-cljfmt "0.5.7"]
+                             [jonase/eastwood "0.2.5"]
+                             [lein-kibit "0.1.6"]]}}
   )
 
