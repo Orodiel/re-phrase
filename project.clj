@@ -1,4 +1,9 @@
 (defproject re-phrase "0.1.0-SNAPSHOT"
+  :description "Simple Clojure(Script) chat"
+  :url "https://github.com/Orodiel/re-phrase"
+  :scm {:name "git"
+        :url  "https://www.github.com/cloverage/cloverage"
+        :tag  "HEAD"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha3"]
                  [org.clojure/clojurescript "1.9.36"]
                  [com.cognitect/transit-clj "0.8.285"]
