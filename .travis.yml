@@ -1,0 +1,27 @@
+language: clojure
+lein: 2.8.1
+sudo: false
+
+install:
+  # Get recent node:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install stable
+  - nvm use stable
+  - npm install -g eclint
+
+before_script:
+  - eclint check .* **
+  - (lein do cljfmt check, eastwood kibit)
+
+script:
+  - (lein uberjar)
+
+cache:
+  directories:
+    - $HOME/.m2
+
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk7
+  - openjdk6
