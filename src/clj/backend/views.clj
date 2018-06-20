@@ -5,10 +5,10 @@
 (defn index-page
   [_]
   (html5
-    (html
-      [:head
-       [:title "Re-phrase"]
-       [:meta {:charset "utf-8"}]]
-      [:body
-       [:div#app]
-       (hiccup.page/include-js "cljs/main.js")])))
+   (html
+    [:head
+     [:title "Re-phrase"]
+     [:meta {:charset "utf-8"}]]
+    [:body
+     [:div#app]
+     (hiccup.page/include-js "cljs/main.js")])))

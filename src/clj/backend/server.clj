@@ -1,5 +1,5 @@
 (ns backend.server
-  (:use backend.routes)
+  (:use [backend.routes :refer [app-routes]])
   (:require [org.httpkit.server :as http-kit]
             [compojure.core :refer [routes]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults api-defaults]]
@@ -10,10 +10,10 @@
 
 (def handler
   (routes
-    (-> #'app-routes
-        (wrap-resource "public")
-        (wrap-defaults site-defaults)
-        (wrap-reload))))
+   (-> #'app-routes
+       (wrap-resource "public")
+       (wrap-defaults site-defaults)
+       (wrap-reload))))
 
 (def server-port 8080)
 (defn start-server []
