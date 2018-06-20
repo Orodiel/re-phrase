@@ -6,7 +6,7 @@
 (defn content []
   [:div
    [:p "You clicked " @app-state " times"]
-   [:button "Click me"
-    {:on-click #(swap! app-state inc)}]])
+   [:button {:on-click #(swap! app-state inc)}
+    "Click me"]])
 
 (r/render-component [content] (.querySelector js/document "#app"))
