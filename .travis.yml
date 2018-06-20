@@ -11,7 +11,7 @@ install:
 
 before_script:
   - eclint check .* **
-  - (lein do cljfmt check, eastwood kibit)
+  - (lein do cljfmt check, eastwood, kibit)
 
 script:
   - (lein uberjar)
