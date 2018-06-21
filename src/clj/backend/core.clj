@@ -1,7 +1,7 @@
 (ns backend.core
   (:gen-class)
-  (:use [backend.server :refer [start-server server-port]])
-  (:require [clojure.tools.nrepl.server :as nrepl]))
+  (:require [clojure.tools.nrepl.server :as nrepl]
+            [backend.server :refer [start-server server-port]]))
 
 (def repl-port 5301)
 

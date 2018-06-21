@@ -45,7 +45,8 @@
                        :prep-tasks ["compile" ["cljsbuild" "once" "min"]]}
              :dev {:plugins [[lein-figwheel "0.5.3"]
                              [lein-cljfmt "0.5.7"]
-                             [jonase/eastwood "0.2.5"]
+                             [jonase/eastwood "0.2.6"]
                              [lein-kibit "0.1.6"]]}}
+  :aliases {"style" ["do" ["cljfmt" "fix"] ["eastwood"] ["kibit"]]}
   )
 

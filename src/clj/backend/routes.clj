@@ -1,9 +1,8 @@
 (ns backend.routes
-  (:use [backend.views :refer [index-page]])
   (:require [compojure.core :refer [GET POST defroutes routes]]
-            [compojure.route :refer [not-found]]))
+            [compojure.route :refer [not-found]]
+            [backend.views :refer [index-page]]))
 
-(defroutes app-routes
+(defroutes static-routes
   (GET "/" [] #'index-page)
   (not-found "Not found"))
-
