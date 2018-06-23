@@ -20,12 +20,12 @@
                  [im.chit/vinyasa "0.2.0"]
                  ]
   :min-lein-version "2.8.1"
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "src/cljc"]
   :main backend.core
   :plugins [[lein-cljsbuild "1.1.3"]]
   :clean-targets ^{:protect false} [:target-path "resources/public/cljs"]
   :cljsbuild {:builds [{:id "dev"
-                        :source-paths ["src/cljs"]
+                        :source-paths ["src/cljs" "src/cljc"]
                         :figwheel true
                         :compiler {:main frontend.core
                                    :asset-path "cljs/out"
@@ -33,7 +33,7 @@
                                    :output-dir "resources/public/cljs/out"}}
                        {:id "min"
                         :jar true
-                        :source-paths ["src/cljs"]
+                        :source-paths ["src/cljs" "src/cljc"]
                         :compiler {:main frontend.core
                                    :output-to "resources/public/cljs/main.js"
                                    :optimizations :advanced
