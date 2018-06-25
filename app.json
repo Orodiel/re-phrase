@@ -1,0 +1,5 @@
+{
+  "name": "Re-phrase",
+  "description": "Simple re-frame based Clojure(Script) chat",
+  "image": "heroku/clojure"
+}

@@ -9,7 +9,8 @@
                              [keyword-params :refer [wrap-keyword-params]]
                              [params :refer [wrap-params]])
             (hiccup [core :refer [html]]
-                    [page :refer [html5 include-js include-css]])))
+                    [page :refer [html5 include-js include-css]])
+            [environ.core :refer [env]]))
 
 (defn current-time []
   (.format
@@ -82,6 +83,6 @@
        (wrap-params)
        (wrap-dir-index))))
 
-(def server-port 8080)
+(def server-port (Integer. (or (env :port) 8080)))
 (defn start-server []
   (run-server #'handler {:port server-port}))

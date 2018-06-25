@@ -11,6 +11,7 @@
                  [ring "1.4.0"]
                  [ring/ring-defaults "0.2.0"]
                  [org.clojure/tools.nrepl "0.2.11"]
+                 [environ "1.0.0"]
 
                  [haslett "0.1.2"]
                  [org.clojure/core.async "0.4.474"]
@@ -21,7 +22,9 @@
   :min-lein-version "2.8.1"
   :source-paths ["src/clj"]
   :main backend.core
-  :plugins [[lein-cljsbuild "1.1.7"]]
+  :plugins [[lein-cljsbuild "1.1.7"]
+            [environ/environ.lein "0.3.1"]]
+  :hooks [environ.leiningen.hooks]
   :clean-targets ^{:protect false} [:target-path "resources/public/cljs"]
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/cljs"]
