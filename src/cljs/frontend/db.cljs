@@ -5,7 +5,7 @@
   {:login      {:input ""}
    :user       {:name ""}
    :chat       {:input    ""
-                :messages []}
+                :messages '()}
    :connection {:socket     nil
                 :connected? false
                 :url-fn     #(-> (.-location js/document)

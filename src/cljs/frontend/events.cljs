@@ -30,30 +30,24 @@
 (reg-event-db
   :message-received
   (fn [db [_ message]]
-    (update-in db [:chat :messages] #(->> message
-                                          (read-string)
-                                          (conj %)))))
+    (update-in db [:chat :messages] #(-> message
+                                         (read-string)
+                                         (cons %)))))
 
 (reg-event-fx
   :message-polling-required
   (fn [{:keys [db]} [_ handler]]
-    {:websocket {:action :register-handler
+    {:websocket {:action     :register-handler
                  :on-receive #(dispatch [:message-received %])
-                 :socket (get-in db [:connection :socket])}}))
+                 :socket     (get-in db [:connection :socket])}}))
 
 (reg-event-fx
   :connection-requested
   (fn [{:keys [db]} _]
-    {:websocket {:action :open
+    {:websocket {:action   :open
                  :endpoint ((:url-fn (:connection db)) (:user db))
-                 :on-open #(dispatch [:websocket-opened %])
+                 :on-open  #(dispatch [:websocket-opened %])
                  :on-close #(dispatch [:websocket-closed %])}}))
-
-(reg-event-fx
-  :send-message
-  (fn [_ [_ message]]
-    {:websocket {:action :send
-                 :message message}}))
 
 (reg-event-fx
   :enable-re-frisk
@@ -63,14 +57,14 @@
 (reg-event-fx
   :register-socket-handler
   (fn [{:keys [db]} [_ handler]]
-    {:websocket {:socket (get-in db [:connection :socket])
-                 :action :reg-listener
+    {:websocket {:socket     (get-in db [:connection :socket])
+                 :action     :reg-listener
                  :on-receive handler}}))
 
 (reg-event-fx
   :send-message
   (fn [{:keys [db]} [_ message]]
-    {:websocket {:socket (get-in db [:connection :socket])
-                 :action :send
+    {:websocket {:socket  (get-in db [:connection :socket])
+                 :action  :send
                  :message message}
-     :db (assoc-in db [:chat :input] "")}))
+     :db        (assoc-in db [:chat :input] "")}))
