@@ -28,14 +28,16 @@
         (dissoc [:connection :socket])
         (assoc-in [:connection :connected?] false))))
 
+(defn indexed-message
+  [{:keys [id] :as message}]
+  {id message})
+
 (reg-event-db
   :message-received
   (fn [db [_ message]]
-    (update-in db [:chat :messages] #(-> message
-                                         (read-string)
-                                         ((fn [msg] {(:id msg) msg}))
-                                         (into %)))))
-
+    (update-in db [:chat :messages] #(into % (-> message
+                                                 (read-string)
+                                                 (indexed-message))))))
 (reg-event-fx
   :message-polling-required
   (fn [{:keys [db]} _]
@@ -65,7 +67,7 @@
 
 (reg-event-fx
   :load-history
-  (fn [{:keys [db]} [_ [since count]]]
+  (fn [{:keys [db]} [_ since count]]
     {:websocket {:socket (get-in db [:connection :socket])
                  :action :send
                  :message (load-messages-request since count)}}))

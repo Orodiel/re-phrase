@@ -65,12 +65,14 @@
 (defn chat
   []
   (dispatch [:message-polling-required])
-  (let [user-name (subscribe [:query [:user :name]])]
+  (let [user-name (subscribe [:query [:user :name]])
+        first-message-id (subscribe [:first-message-id])]
     (fn []
       [:div.chat_window
        [:div.top_menu
         [:div.buttons
-         [:div.button.minimize {:on-click #(dispatch [:enable-re-frisk])}]]
+         [:div.button.minimize {:on-click #(dispatch [:enable-re-frisk])}]
+         [:div.button.maximize {:on-click #(dispatch [:load-history (- @first-message-id 1) 5])}]]
         [:div.title (str "Re-phrase (" @user-name ")")]]
        [chat-messages]
        [chat-input]])))

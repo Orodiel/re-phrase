@@ -52,15 +52,18 @@
   (filter #(<= from (:id %) to) @messages))
 
 (defn handle-load-history [channel {:keys [since count]}]
-  (doseq [message (select-messages since (+ since count))]
-    (send-message channel message)))
+  (let [selected-messages (select-messages (- since count) since)]
+    (println "sm: " selected-messages)
+    (doseq [message selected-messages]
+      (send-message channel message))))
 
 (defn handle-user-input [channel edn-command]
+  (println "! " edn-command)
   (let [user-params (@connected-users channel)
         {:keys [request] :as command} (clojure.edn/read-string edn-command)]
     (when (= :send request)
       (handle-send user-params channel command))
-    (when (= :load-history request)
+    (when (= :history request)
       (handle-load-history channel command))))
 
 (defn user-notification [user-params notification]
