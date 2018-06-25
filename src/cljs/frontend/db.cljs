@@ -1,4 +1,5 @@
-(ns frontend.db)
+(ns frontend.db
+  (:require [clojure.string :refer [replace]]))
 
 (def default-db
   {:login      {:input ""}
@@ -7,5 +8,6 @@
                 :messages []}
    :connection {:socket     nil
                 :connected? false
-                :url-fn     #(str "ws://localhost:8080/chat/" (:name %))}})
-;(.-localion (js/document))
+                :url-fn     #(-> (.-location js/document)
+                                 (str "chat/" (:name %))
+                                 (replace "http" "ws"))}})
