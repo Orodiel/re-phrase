@@ -67,10 +67,15 @@
 
 (reg-event-fx
   :load-history
-  (fn [{:keys [db]} [_ since count]]
-    {:websocket {:socket (get-in db [:connection :socket])
-                 :action :send
-                 :message (load-messages-request since count)}}))
+  (fn [{:keys [db]} [_ count]]
+    (let [since (-> db
+                    (get-in [:chat :messages])
+                    (keys)
+                    (last)
+                    (- 1))]
+      {:websocket {:socket  (get-in db [:connection :socket])
+                   :action  :send
+                   :message (load-messages-request since count)}})))
 
 (reg-event-fx
   :send-message

@@ -26,7 +26,7 @@
                          (let [enter-char-code 13]
                            (when (= enter-char-code (.-charCode e))
                              (dispatch [:connection-requested]))))}]]
-      [:div.send_message {:on-click (when (not-empty @input) #(dispatch [:connection-requested]))}
+      [:div.connect {:on-click (when (not-empty @input) #(dispatch [:connection-requested]))}
        [:div.icon]
        [:div.text "Connect"]]]]))
 
@@ -44,37 +44,38 @@
                           (when (= enter-char-code (.-charCode e))
                             (dispatch [:send-message @input]))))
         :on-change #(dispatch [:update path (new-input-value %)])}]]
+     [:div.load_messages {:on-click #(dispatch [:load-history 10])}
+      [:div.icon]
+      [:div.text "Load"]]
      [:div.send_message {:on-click #(dispatch [:send-message @input])}
       [:div.icon]
       [:div.text "Send"]]]))
 
 (defn chat-message
-  [{:keys [author text time own? id]}]
-  (let [ownership-class (if own? "right" "left")]
+  [{:keys [author text time id]} user-name]
+  (let [ownership-class (if (= author user-name) "right" "left")]
     ^{:key id} [(keyword (str "div.message.appeared." ownership-class))
                 [:div.avatar]
                 [:div.text_wrapper
                  [:div.text (str time " " author ": " text)]]]))
 
 (defn chat-messages
-  []
+  [user-name]
   (let [messages (subscribe [:query [:chat :messages]])]
     [:ul.messages
-     (map chat-message (vals @messages))]))
+     (map #(chat-message % user-name) (vals @messages))]))
 
 (defn chat
   []
   (dispatch [:message-polling-required])
-  (let [user-name (subscribe [:query [:user :name]])
-        first-message-id (subscribe [:first-message-id])]
+  (let [user-name (subscribe [:query [:user :name]])]
     (fn []
       [:div.chat_window
        [:div.top_menu
         [:div.buttons
-         [:div.button.minimize {:on-click #(dispatch [:enable-re-frisk])}]
-         [:div.button.maximize {:on-click #(dispatch [:load-history (- @first-message-id 1) 5])}]]
+         [:div.button.minimize {:on-click #(dispatch [:enable-re-frisk])}]]
         [:div.title (str "Re-phrase (" @user-name ")")]]
-       [chat-messages]
+       [chat-messages @user-name]
        [chat-input]])))
 
 (defn re-phrase-app

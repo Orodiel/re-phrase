@@ -10,10 +10,3 @@
   :connected?
   (fn [db _]
     (get-in db [:connection :connected?])))
-
-(reg-sub
-  :first-message-id
-  (fn [query_v _]
-    (subscribe [:query [:chat :messages]]))
-  (fn [messages _]
-    (first (keys messages))))

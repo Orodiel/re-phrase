@@ -24,50 +24,43 @@
   (defonce next-id #(swap! max-id inc)))
 
 (defn new-message
-  ([author text owner]
+  ([author text]
    {:id     (next-id)
     :time   (current-time)
     :author author
-    :text   text
-    :owner    owner}))
+    :text   text}))
 
 (defn send-message [channel message]
-  (let [own-message (= (:owner message) channel)
-        result-message (-> message
-                           (assoc :own? own-message)
-                           (dissoc :owner)
-                           (str))]
-    (send! channel result-message)))
+  (send! channel (str message)))
 
 (defn broadcast-message [message]
   (dosync (alter messages conj message))
   (doseq [channel (keys @connected-users)]
     (send-message channel message)))
 
-(defn handle-send [{:keys [name]} channel {:keys [text]}]
-  (let [message (new-message name text channel)]
+(defn handle-send [{:keys [name]} {:keys [text]}]
+  (let [message (new-message name text)]
     (broadcast-message message)))
 
 (defn select-messages [from to]
+  (println "! " from ":" to)
   (filter #(<= from (:id %) to) @messages))
 
 (defn handle-load-history [channel {:keys [since count]}]
   (let [selected-messages (select-messages (- since count) since)]
-    (println "sm: " selected-messages)
     (doseq [message selected-messages]
       (send-message channel message))))
 
 (defn handle-user-input [channel edn-command]
-  (println "! " edn-command)
   (let [user-params (@connected-users channel)
         {:keys [request] :as command} (clojure.edn/read-string edn-command)]
     (when (= :send request)
-      (handle-send user-params channel command))
+      (handle-send user-params command))
     (when (= :history request)
       (handle-load-history channel command))))
 
 (defn user-notification [user-params notification]
-  (new-message "System" (str "User '" (:name user-params) "' " notification) nil))
+  (new-message "System" (str "User '" (:name user-params) "' " notification)))
 
 (defn add-user [channel params]
   (swap! connected-users assoc channel params)

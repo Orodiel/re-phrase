@@ -43,7 +43,8 @@
                                    :closure-defines {goog.DEBUG false}
                                    :pretty-print false}}]
               }
-  :figwheel {:server-port 5309}
+  :figwheel {:server-port 5309
+             :css-dirs ["resources/public/styles.css"]}
   :profiles {:uberjar {:aot :all
                        :prep-tasks ["compile" ["cljsbuild" "once" "min"]]}
              :dev {:plugins [[lein-figwheel "0.5.3"]
