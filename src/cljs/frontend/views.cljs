@@ -35,6 +35,9 @@
       [:input.message_input
        {:placeholder "Type your message here..."
         :value @input
+        :on-key-press #((let [enter-char-code 13]
+                          (when (= enter-char-code (.-charCode %))
+                            (dispatch [:send-message @input]))))
         :on-change #(dispatch [:update path (new-input-value %)])}]]
      [:div.send_message {:on-click #(dispatch [:send-message @input])}
       [:div.icon]
