@@ -21,7 +21,11 @@
        [:input.message_input
         {:placeholder "Chose your nickname"
          :value       @input
-         :on-change   #(dispatch [:update path (new-input-value %)])}]]
+         :on-change   #(dispatch [:update path (new-input-value %)])
+         :on-key-press (fn [e]
+                         (let [enter-char-code 13]
+                           (when (= enter-char-code (.-charCode e))
+                             (dispatch [:connection-requested]))))}]]
       [:div.send_message {:on-click (when (not-empty @input) #(dispatch [:connection-requested]))}
        [:div.icon]
        [:div.text "Connect"]]]]))
@@ -35,8 +39,9 @@
       [:input.message_input
        {:placeholder "Type your message here..."
         :value @input
-        :on-key-press #((let [enter-char-code 13]
-                          (when (= enter-char-code (.-charCode %))
+        :on-key-press (fn [e]
+                        (let [enter-char-code 13]
+                          (when (= enter-char-code (.-charCode e))
                             (dispatch [:send-message @input]))))
         :on-change #(dispatch [:update path (new-input-value %)])}]]
      [:div.send_message {:on-click #(dispatch [:send-message @input])}
