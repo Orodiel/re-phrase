@@ -22,6 +22,7 @@
   :min-lein-version "2.8.1"
   :source-paths ["src/clj"]
   :main backend.core
+  :uberjar-name "re-phrase-0.1.0-SNAPSHOT-standalone.jar"
   :plugins [[lein-cljsbuild "1.1.7"]
             [environ/environ.lein "0.3.1"]]
   :hooks [environ.leiningen.hooks]
