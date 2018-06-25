@@ -2,12 +2,9 @@
   :description "Simple Clojure(Script) chat"
   :url "https://github.com/Orodiel/re-phrase"
   :scm {:name "git"
-        :url  "https://www.github.com/cloverage/cloverage"
+        :url  "https://www.github.com/Orodiel/re-phrase"
         :tag  "HEAD"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha3"]
-                 [org.clojure/clojurescript "1.9.36"]
-                 [com.cognitect/transit-clj "0.8.285"]
-
                  [http-kit "2.2.0-alpha1"]
                  [hiccup "1.0.5"]
                  [compojure "1.5.0"]
@@ -15,17 +12,19 @@
                  [ring/ring-defaults "0.2.0"]
                  [org.clojure/tools.nrepl "0.2.11"]
 
+                 [haslett "0.1.2"]
+                 [org.clojure/core.async "0.4.474"]
+                 [org.clojure/clojurescript "1.9.36"]
                  [reagent "0.6.0"]
-
-                 [im.chit/vinyasa "0.2.0"]
-                 ]
+                 [re-frame "0.10.5"]
+                 [re-frisk "0.5.4"]]
   :min-lein-version "2.8.1"
-  :source-paths ["src/clj" "src/cljc"]
+  :source-paths ["src/clj"]
   :main backend.core
-  :plugins [[lein-cljsbuild "1.1.3"]]
+  :plugins [[lein-cljsbuild "1.1.7"]]
   :clean-targets ^{:protect false} [:target-path "resources/public/cljs"]
   :cljsbuild {:builds [{:id "dev"
-                        :source-paths ["src/cljs" "src/cljc"]
+                        :source-paths ["src/cljs"]
                         :figwheel true
                         :compiler {:main frontend.core
                                    :asset-path "cljs/out"
@@ -33,7 +32,7 @@
                                    :output-dir "resources/public/cljs/out"}}
                        {:id "min"
                         :jar true
-                        :source-paths ["src/cljs" "src/cljc"]
+                        :source-paths ["src/cljs"]
                         :compiler {:main frontend.core
                                    :output-to "resources/public/cljs/main.js"
                                    :optimizations :advanced
@@ -47,6 +46,7 @@
                              [lein-cljfmt "0.5.7"]
                              [jonase/eastwood "0.2.6"]
                              [lein-kibit "0.1.6"]]}}
-  :aliases {"style" ["do" ["cljfmt" "fix"] ["eastwood"] ["kibit"]]}
+  :aliases {"style" ["do" ["cljfmt" "fix"] ["eastwood"] ["kibit"]]
+            "dev" ["do" "clean" ["figwheel"]]}
   )
 

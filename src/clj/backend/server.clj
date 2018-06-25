@@ -9,19 +9,7 @@
                              [keyword-params :refer [wrap-keyword-params]]
                              [params :refer [wrap-params]])
             (hiccup [core :refer [html]]
-                    [page :refer [html5 include-js]])
-            [common :refer [app-container-id]]))
-
-(defn index-page
-  [_]
-  (html5
-   (html
-    [:head
-     [:title "Re-phrase"]
-     [:meta {:charset "utf-8"}]]
-    [:body
-     [(keyword (str "div" app-container-id))]
-     (include-js "cljs/main.js")])))
+                    [page :refer [html5 include-js include-css]])))
 
 (defn current-time []
   (.format
@@ -32,36 +20,40 @@
 (let [max-id (atom 0)]
   (defonce next-id #(swap! max-id inc)))
 
-(defn new-message [author text]
-  {:id     (next-id)
-   :time   (current-time)
-   :author author
-   :text   text})
-
-(defonce messages (ref []))
+(defn new-message
+  ([author text owner]
+   {:id     (next-id)
+    :time   (current-time)
+    :author author
+    :text   text
+    :owner    owner}))
 
 (defn send-message [channel message]
-  (send! channel (str message)))
+  (let [own-message (= (:owner message) channel)
+        result-message (-> message
+                           (assoc :own? own-message)
+                           (dissoc :owner)
+                           (str))]
+    (send! channel result-message)))
 
 (defn broadcast-message [message]
-  (dosync (alter messages conj message))
   (doseq [channel (keys @connected-users)]
     (send-message channel message)))
 
 (defn handle-user-input [from-channel command]
   (let [user-param (@connected-users from-channel)
-        formatted-message (new-message (:name user-param) command)]
+        formatted-message (new-message (:name user-param) command from-channel)]
     (broadcast-message formatted-message)))
 
 (defn user-notification [user-params notification]
-  (new-message "System" (str "User '" (:name user-params) "' " notification)))
+  (new-message "System" (str "User '" (:name user-params) "' " notification) nil))
 
 (defn add-user [channel params]
   (swap! connected-users assoc channel params)
   (broadcast-message (user-notification params "has joined")))
 
 (defn remove-user [channel]
-  (let [user-params (connected-users channel)]
+  (let [user-params (@connected-users channel)]
     (swap! connected-users dissoc channel)
     (broadcast-message (user-notification user-params "has left"))))
 
@@ -71,8 +63,15 @@
     (on-close channel (fn [_] (remove-user channel)))
     (on-receive channel #(handle-user-input channel %))))
 
+(defn wrap-dir-index [handler-fn]
+  (fn [request]
+    (handler-fn
+     (update-in request [:uri]
+                #(if (= "/" %)
+                   "/index.html"
+                   %)))))
+
 (defroutes app-routes
-  (GET "/" [] #'index-page)
   (GET "/chat/:name" [] #'chat-handler)
   (not-found "Not found"))
 
@@ -81,7 +80,7 @@
    (-> #'app-routes
        (wrap-resource "public")
        (wrap-params)
-       (wrap-keyword-params))))
+       (wrap-dir-index))))
 
 (def server-port 8080)
 (defn start-server []

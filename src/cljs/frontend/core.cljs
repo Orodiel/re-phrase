@@ -1,13 +1,18 @@
 (ns frontend.core
-  (:require [reagent.core :as r]
-            [common :refer [app-container-id]]))
+  (:require [frontend.events]
+            [frontend.subs]
+            [frontend.effects]
+            [frontend.views :refer [re-phrase-app]]
+            [re-frame.core :refer [dispatch]]
+            [reagent.core :as r]
+            [re-frisk.core :refer [enable-re-frisk!]]))
 
-(def app-state (r/atom 0))
+(enable-console-print!)
+(defonce initialize-db (dispatch [:initialize-db]))
 
-(defn content []
-  [:div
-   [:p "You clicked " @app-state " times"]
-   [:button {:on-click #(swap! app-state inc)}
-    "Click me"]])
+(defn ^:export main
+  []
+  (r/render-component [re-phrase-app]
+                      (.querySelector js/document "#app")))
 
-(r/render-component [content] (.querySelector js/document app-container-id))
+(main)
