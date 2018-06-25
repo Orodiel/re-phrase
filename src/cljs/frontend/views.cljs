@@ -15,7 +15,7 @@
      [:div.top_menu
       [:div.buttons
        [:div.button.minimize {:on-click #(dispatch [:enable-re-frisk])}]]
-      [:div.title "Connect"]]
+      [:div.title "Disconnected"]]
      [:div.bottom_wrapper.clearfix
       [:div.message_input_wrapper
        [:input.message_input
@@ -60,7 +60,7 @@
   []
   (let [messages (subscribe [:query [:chat :messages]])]
     [:ul.messages
-     (map chat-message @messages)]))
+     (map chat-message (vals @messages))]))
 
 (defn chat
   []

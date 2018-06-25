@@ -32,7 +32,8 @@
   (fn [db [_ message]]
     (update-in db [:chat :messages] #(-> message
                                          (read-string)
-                                         (cons %)))))
+                                         ((fn [msg] {(:id msg) msg}))
+                                         (into %)))))
 
 (reg-event-fx
   :message-polling-required
