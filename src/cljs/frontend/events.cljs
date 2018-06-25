@@ -1,7 +1,8 @@
 (ns frontend.events
   (:require [re-frame.core :refer [reg-event-fx reg-event-db dispatch]]
             [frontend.db :refer [default-db]]
-            [cljs.tools.reader.edn :refer [read-string]]))
+            [cljs.tools.reader.edn :refer [read-string]]
+            [frontend.protocol :refer [send-message-request load-messages-request]]))
 
 (reg-event-db
   :initialize-db
@@ -37,7 +38,7 @@
 
 (reg-event-fx
   :message-polling-required
-  (fn [{:keys [db]} [_ handler]]
+  (fn [{:keys [db]} _]
     {:websocket {:action     :register-handler
                  :on-receive #(dispatch [:message-received %])
                  :socket     (get-in db [:connection :socket])}}))
@@ -63,9 +64,16 @@
                  :on-receive handler}}))
 
 (reg-event-fx
+  :load-history
+  (fn [{:keys [db]} [_ [since count]]]
+    {:websocket {:socket (get-in db [:connection :socket])
+                 :action :send
+                 :message (load-messages-request since count)}}))
+
+(reg-event-fx
   :send-message
   (fn [{:keys [db]} [_ message]]
     {:websocket {:socket  (get-in db [:connection :socket])
                  :action  :send
-                 :message message}
+                 :message (send-message-request message)}
      :db        (assoc-in db [:chat :input] "")}))

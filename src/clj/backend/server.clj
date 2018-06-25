@@ -18,6 +18,8 @@
    (java.time.LocalDateTime/now)))
 
 (defonce connected-users (atom {}))
+(defonce messages (ref []))
+
 (let [max-id (atom 0)]
   (defonce next-id #(swap! max-id inc)))
 
@@ -38,13 +40,28 @@
     (send! channel result-message)))
 
 (defn broadcast-message [message]
+  (dosync (alter messages conj message))
   (doseq [channel (keys @connected-users)]
     (send-message channel message)))
 
-(defn handle-user-input [from-channel command]
-  (let [user-param (@connected-users from-channel)
-        formatted-message (new-message (:name user-param) command from-channel)]
-    (broadcast-message formatted-message)))
+(defn handle-send [{:keys [name]} channel {:keys [text]}]
+  (let [message (new-message name text channel)]
+    (broadcast-message message)))
+
+(defn select-messages [from to]
+  (filter #(<= from (:id %) to) @messages))
+
+(defn handle-load-history [channel {:keys [since count]}]
+  (doseq [message (select-messages since (+ since count))]
+    (send-message channel message)))
+
+(defn handle-user-input [channel edn-command]
+  (let [user-params (@connected-users channel)
+        {:keys [request] :as command} (clojure.edn/read-string edn-command)]
+    (when (= :send request)
+      (handle-send user-params channel command))
+    (when (= :load-history request)
+      (handle-load-history channel command))))
 
 (defn user-notification [user-params notification]
   (new-message "System" (str "User '" (:name user-params) "' " notification) nil))
